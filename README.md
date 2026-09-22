@@ -37,3 +37,21 @@ The relationship is `Goal -> Plan -> Task`, with `Goal/Task -> ProgressEvent -> 
 `app/services/goal_repository.py` defines the database-agnostic `GoalRepository` contract: create, retrieve by ID, list a user's goals, update, and delete. Application code can depend on this boundary rather than a storage engine, so a future database adapter can be substituted without changing the `Goal` domain model or calling code.
 
 `app/services/sqlite_goal_repository.py` is the local development and test adapter. It uses only Python's `sqlite3` module, owns the SQLite schema and serialization details, and reconstructs each stored record as the existing validated `Goal` model. It has no Foundry, Azure, web framework, ORM, RAG, or planner dependency.
+
+## Create-goal tool boundary
+
+`app/tools/create_goal.py` exposes the small, dependency-injected `create_goal(repository, data)` function. It accepts a structured `CreateGoalInput`, constructs the existing `Goal` model so its validation remains authoritative, and calls only the `GoalRepository` interface. Its `CreateGoalResult` returns the persisted goal or a structured validation, duplicate-ID, or repository error.
+
+```text
+User / Agent
+    ↓
+create_goal tool
+    ↓
+Goal model + validation
+    ↓
+GoalRepository
+    ↓
+Persistence
+```
+
+The tool is intentionally unaware of SQLite and can receive any implementation of `GoalRepository`. It has no Foundry, LLM, RAG, planner, calendar, email, or external-service dependency.
