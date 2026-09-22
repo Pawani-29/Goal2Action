@@ -31,3 +31,9 @@ Goal2Action is an Agentic AI personal execution agent for students, planned to u
 - `RiskAssessment` records a point-in-time comparison between remaining work and available capacity.
 
 The relationship is `Goal -> Plan -> Task`, with `Goal/Task -> ProgressEvent -> Evidence`. `UserContext` supplies the user constraints used for planning, and `RiskAssessment` supplies a separate feasibility signal. New plans can supersede older plans while completed work remains represented in immutable progress events.
+
+## Goal repository and local persistence
+
+`app/services/goal_repository.py` defines the database-agnostic `GoalRepository` contract: create, retrieve by ID, list a user's goals, update, and delete. Application code can depend on this boundary rather than a storage engine, so a future database adapter can be substituted without changing the `Goal` domain model or calling code.
+
+`app/services/sqlite_goal_repository.py` is the local development and test adapter. It uses only Python's `sqlite3` module, owns the SQLite schema and serialization details, and reconstructs each stored record as the existing validated `Goal` model. It has no Foundry, Azure, web framework, ORM, RAG, or planner dependency.
