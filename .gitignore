@@ -1,0 +1,16 @@
+# Local configuration and secrets
+.env
+
+# Python environments and artifacts
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local diagnostics
+*.log
+
+# Editor settings
+.vscode/
+
